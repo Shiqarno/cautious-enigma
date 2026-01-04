@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "cautious-enigma"
+version = "0.1.0"
+description = "Forex trading project"
+authors = ["Shiqarno <shiqarno@proton.me>"]
+license = "MIT License"
+readme = "README.md"
+keywords = ["forex", "data science", "machine learning", "trading"]
+
+[tool.poetry.dependencies]
+python = "~3.12"
+pandas = "^2.3.3"
+pandas-ta = "^0.4.71b0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
