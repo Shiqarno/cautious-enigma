@@ -1,0 +1,11 @@
+uvicorn:
+  host: "0.0.0.0"
+  port: 8000
+  log_level: "debug"
+logs:
+  path: "logs"
+predict:
+  model_path: "models"
+prepare:
+  digits: 100000
+  path: "data_train/eurusd_h1.csv"

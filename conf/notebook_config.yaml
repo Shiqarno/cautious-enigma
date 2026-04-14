@@ -1,0 +1,15 @@
+uvicorn:
+  host: "0.0.0.0"
+  port: 8000
+  log_level: "debug"
+logs:
+  path: "logs"
+predict:
+  path: "data/to_predict.csv"
+  model_path: "models"
+  class_model: "models/class_model.joblib"
+prepare:
+  digits: 100000
+  path: "data_train/eurusd_h1.csv"
+class_model:
+  threshold: 0.8
