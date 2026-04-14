@@ -207,8 +207,7 @@ marimo/_lsp/
 __marimo__/
 
 # data 
-data/input_data.csv
-data/to_predict.csv
+data/
 
 # logs
 logs/

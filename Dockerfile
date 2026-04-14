@@ -76,9 +76,9 @@ RUN conda run -n $CONDA_ENV poetry install
 
 #CMD conda run -n base jupyter notebook --ip 0.0.0.0 --allow-root --no-browser
 RUN mkdir /workdir/data
-COPY ./cautious-enigma /workdir/cautious-enigma
+COPY ./enigma /workdir/enigma
 COPY ./conf /workdir/conf
 COPY ./models /workdir/models
 COPY ./backtest_watch.py /workdir/backtest_watch.py
 COPY ./backtest_file_prepare.py /workdir/backtest_file_prepare.py
-CMD conda run -n forex python cautious-enigma/main.py
+CMD conda run -n forex python enigma/main.py

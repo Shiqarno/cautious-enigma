@@ -5,7 +5,7 @@ import pandas as pd
 import pandas_ta as ta
 from hydra import compose, initialize
 
-from cautions-enigma.core import Forex as ForexCore
+from enigma.core import Forex as ForexCore
 
 with initialize(version_base=None, config_path="conf", job_name="app"):
     cfg = compose(config_name="notebook_config")
