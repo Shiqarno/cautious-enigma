@@ -14,4 +14,4 @@ curl -X 'POST' \
 
 for Windows 
 - `docker run --rm -d --name forex -v ${pwd}/logs:/workdir/logs -v ${pwd}/Tester:/workdir/Tester -p 8000:8000 forex`
-- `mklink /j "C:\Users\mtuser\Documents\github\forex\Tester" "C:\Users\mtuser\AppData\Roaming\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075"`
+- `mklink /j "C:\Users\mtuser\Documents\github\cautious-enigma\Tester" "C:\Users\mtuser\AppData\Roaming\MetaQuotes\Tester\D0E8209F77C8CF37AD8BF550E51FF075"`
