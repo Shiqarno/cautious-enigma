@@ -208,3 +208,10 @@ __marimo__/
 
 # data 
 data/input_data.csv
+data/to_predict.csv
+
+# logs
+logs/
+
+# mq5
+Tester/
