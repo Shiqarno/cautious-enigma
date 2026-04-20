@@ -6,12 +6,10 @@ from datetime import date
 
 import fire
 import pandas as pd
-
-# trading
+import numpy as np
 import pandas_ta as ta
 from hydra import compose, initialize
 from joblib import dump, load
-from numpy import array as np_array
 from sklearn.ensemble import RandomForestClassifier
 
 # models
@@ -183,6 +181,38 @@ class Forex:
         keys = list(classes)
         values = list(class_preds[0])
         return {"class_"+str(keys[i]): float(values[i]) for i in range(len(keys))}
+    
+    def get_core_prediction(self, bulk=False) -> dict:
+        """Core score (higher is better)"""
+        if self.df is None:
+            self.prepare()
+        
+        if bulk:
+            df = self.df
+        else:
+            last_index = self.df.index[-1]
+            name = self.df.loc[last_index, "name"]
+            df = self.df.query("date == @last_index")
+            if name == "":
+                log_message = "version=" + self.__version__
+                log_message += ":name is None"
+                log_message += f":df.shape={str(df.shape)}"
+                self.logger.info(log_message)
+                return None
+            
+        df['core_score'] = 0
+        df['core_score'] += df.apply(lambda row: 1 if row['ft_scr'] > -0.5 else 0, axis=1)
+        df['core_score'] += df.apply(lambda row: 1 if row['impulse'] > 0.3 else 0, axis=1)
+
+        if bulk:
+            return df
+        last_index = self.df.index[-1]
+        log_message = "version=" + self.__version__
+        log_message += f":{name}:{str(last_index)}"
+        log_message += f":core_score={str(round(df['core_score'].iloc[-1], 2))}"
+        self.logger.info(log_message)
+
+        return {"core_score": float(df['core_score'].iloc[-1])}
 
     def prepare(self):
         """Prepare dataset"""
@@ -227,6 +257,8 @@ class Forex:
 
         df["full_body"] = (df["close"] - df["low"]) * df["trend_direction"] * self.DIGITS
         self.columns_for_train.append("full_body")
+
+        df['shadow'] = (df["high"] - df["low"]) * df["trend_direction"] * self.DIGITS
 
         df["close_ma50_diff"] = (
             (df["close"] - df["ma50"]) * df["trend_direction"] * self.DIGITS
@@ -351,6 +383,39 @@ class Forex:
 
         df["candle_direction"] = df.apply(lambda row: 1 if row["body"] > 0 else 0, axis=1)
         self.columns_for_train.append("candle_direction")
+
+        df['atr_norm'] = df['atr'] / df['close']
+        df['efficiency'] = df['body'].abs() / df['shadow'].abs()
+
+        df['atr10'] = ta.atr(df['high'],df['low'],df['close'], length=10)
+        df['atr50'] = ta.atr(df['high'],df['low'],df['close'], length=50)
+
+        df['compression'] = df['atr10'] / df['atr50']
+
+        df['impulse'] = df['body'] / df['atr'] / self.DIGITS
+        df['impulse_abs'] = df['body'].abs() / df['atr'] / self.DIGITS
+
+        df['local_high'] = 0
+        df['local_low'] = 9999
+        BACKWARD = 3
+        for lag in range(1, BACKWARD + 1):
+            df['local_high'] = np.fmax(
+                df['high'].shift(1 * lag)
+                ,df['local_high']
+            )
+            df['local_low'] = np.fmin(
+                df['low'].shift(1 * lag)
+                ,df['local_low']
+            )
+
+        df['ft_score'] = (
+                    df.apply(lambda row: 
+                    row['close'] - row['local_high'] if row['trend_direction'] == 1 else 
+                    row['local_low'] - row['close'], 
+                    axis=1)
+                        )
+        
+        df['ft_scr'] = df['ft_score'] / df['atr']
 
         self.df = df
 

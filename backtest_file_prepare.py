@@ -28,9 +28,14 @@ df = pd.read_csv(BACKTEST_CSV)
 forex = ForexCore(cfg)
 forex.df = df
 forex.prepare()
+
+df = forex.get_core_prediction(True)
+df['cre'] = df['core_score']
+
 df = forex.get_class_prediction(True)
 df['cls'] = df['class_1']
-columns = ['name','date','open','high','low','close','cls']
+
+columns = ['name','date','open','high','low','close','cls','cre']
 df['date'] = df.index
 df[columns].to_csv(BACKTEST_READY_CSV, index=False)
 print(f"{BACKTEST_READY_CSV} created;")
